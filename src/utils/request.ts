@@ -1,46 +1,66 @@
-import Axios from 'axios'
-// import { ElMessage } from 'element-plus'
+import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { message } from 'ant-design-vue'
+import { useOnline } from '@vueuse/core'
+import router from '@/router'
+import useUserStore from '@/store/user'
 
-const baseURL = 'https://api.github.com'
+const baseURL = 'https://tome3pay.zhihuiquanyu.com'
 
 const request = Axios.create({
   baseURL,
-  timeout: 20000 // 请求超时 20s
+  timeout: 20000
 })
 
-// 前置拦截器（发起请求之前的拦截）
+// 请求拦截器
 request.interceptors.request.use(
-  (response) => {
-    /**
-     * 根据你的项目实际情况来对 config 做处理
-     * 这里对 config 不做任何处理，直接返回
-     */
-    return response
+  (config): AxiosRequestConfig => {
+    const userStore = useUserStore()
+    const { token } = userStore
+    if (token) {
+      // @ts-ignore
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
   },
-  (error) => {
+  (error): Promise<any> => {
     return Promise.reject(error)
   }
 )
 
-// 后置拦截器（获取到响应时的拦截）
+// 响应拦截器
 request.interceptors.response.use(
-  (response) => {
-    /**
-     * 根据你的项目实际情况来对 response 和 error 做处理
-     * 这里对 response 和 error 不做任何处理，直接返回
-     */
+  (response): AxiosResponse | Promise<any> => {
+    if (response.data.resultStatus) {
+      const { resultCode, resultMessage } = response.data.resultStatus
+      if (resultCode === '0000') {
+        return response
+      }
+      message.error(resultMessage || '未知错误')
+      return Promise.reject(new Error(resultMessage || 'Error'))
+    }
     return response
   },
-  (error) => {
-    if (error.response && error.response.data) {
-      const code = error.response.status
-      // const msg = error.response.data.message
-      console.log(code)
-      // ElMessage.error(`Code: ${code}, Message: ${msg}`)
-    } else {
-      // ElMessage.error(`${error}`)
+  (err): Promise<any> => {
+    const { response } = err
+    const online = useOnline()
+    const userStore = useUserStore()
+    if (response) {
+      switch (response.status) {
+        case 401: // 权限不足
+          userStore.LOGOUT()
+          message.warning('登录过期')
+          router.replace('/login')
+          break
+        case 404:
+          message.warning('404 NOT FOUND')
+          break
+        default:
+          message.warning('未知错误')
+      }
+    } else if (!online) {
+      message.warning('网络错误')
     }
-    return Promise.reject(error)
+    return Promise.reject(err)
   }
 )
 

@@ -6,3 +6,6 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+declare module 'good-storage'
+declare module 'nprogress'
