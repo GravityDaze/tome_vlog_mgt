@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import useUserStore from '@/store/user'
 
@@ -10,6 +10,11 @@ export default defineComponent({
     const userStore = useUserStore()
     const current = ref<string[]>([route.path])
     const openkeys = ref<string[]>([]) // todo
+
+    // 监听路由变化
+    watchEffect(() => {
+      current.value = [route.path]
+    })
 
     // 递归渲染菜单
     const renderMenu = (menuList: any[]) =>

@@ -9,7 +9,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^6.0.1",
     "@vueuse/core": "^7.2.2",
-    "ant-design-vue": "^3.0.0-alpha.14",
+    "ant-design-vue": "^3.0.0-alpha.15",
     "axios": "^0.24.0",
     "good-storage": "^1.1.1",
     "nprogress": "^0.2.0",

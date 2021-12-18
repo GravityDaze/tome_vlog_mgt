@@ -50,7 +50,7 @@ const rules = {
   }
 }
 
-// 登录
+// 提交登录表单
 const onSubmit = () => {
   formRef.value
     .validate()
@@ -79,7 +79,7 @@ const onSubmit = () => {
     .catch(() => {})
 }
 
-// 回车按钮触发登录
+// 回车按钮触发提交
 onKeyStroke('Enter', () => onSubmit())
 </script>
 

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import useUserStore from '@/store/user'
+import ActiveTabs from './components/ActiveTabs.vue'
 import SideMenu from './components/SideMenu.vue'
 
 const userStore = useUserStore()
@@ -16,13 +17,14 @@ const logout = (): void => {
 <template>
   <a-layout>
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
-      <div class="logo" />
+      <!-- <div class="logo" /> -->
       <SideMenu />
     </a-layout-sider>
     <a-layout class="h-screen" :style="{ marginLeft: '200px' }">
-      <a-layout-header :style="{ background: '#fff', padding: 0 }">
+      <a-layout-header :style="{ background: '#fff', padding: 0, height: 'auto' }">
         <span>{{ userStore.userInfo.realName }}</span>
         <a-button @click="logout">退出登录</a-button>
+        <ActiveTabs />
       </a-layout-header>
       <a-layout-content class="h-full m-5">
         <a-card class="h-full overflow-hidden overflow-y-auto">
