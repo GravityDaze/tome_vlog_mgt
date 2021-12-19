@@ -11,9 +11,20 @@ export default defineComponent({
     const current = ref<string[]>([route.path])
     const openkeys = ref<string[]>([]) // todo
 
+    const setOpenKeys = (menuList: any[], menuKey?: string): void => {
+      menuList.forEach((menu: any) => {
+        if (menu.child) {
+          setOpenKeys(menu.child, menu.url)
+        } else if (menu.url === route.path) {
+          openkeys.value = [menuKey] as string[]
+        }
+      })
+    }
+
     // 监听路由变化
     watchEffect(() => {
       current.value = [route.path]
+      setOpenKeys(userStore.menuList)
     })
 
     // 递归渲染菜单
